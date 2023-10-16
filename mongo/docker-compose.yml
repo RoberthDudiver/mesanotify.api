@@ -1,0 +1,18 @@
+version: '3.1'
+services:
+  mongodb:
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=rdudiver
+      - MONGO_INITDB_ROOT_PASSWORD=ratonera*1
+      - MONGO_INITDB_AUTH_MECHANISM=SCRAM-SHA-1  # Especifica el mecanismo de autenticación
+    restart: on-failure
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongodb:/data/db1
+    networks:
+      - appnet
+networks:
+  appnet:
+    driver: "bridge"
