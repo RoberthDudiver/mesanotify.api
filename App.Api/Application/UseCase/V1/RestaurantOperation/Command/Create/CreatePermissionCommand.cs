@@ -49,7 +49,7 @@ namespace App.Api.Application.UseCase.V1.RestaurantOperation.Command.Create
             };
 
             await _repository.CreateAsync(entity);
-            _logger.LogDebug("the perssion  was add correctly");
+            _logger.LogDebug("the restaurant  was add correctly");
 
             return new Response<CreateRestaurantResponse>
             {

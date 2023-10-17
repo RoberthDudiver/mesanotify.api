@@ -14,7 +14,7 @@ namespace App.Core.Domain.Entities
 
       public class TableBase
     {
-        public string ExternalId { get; set; }
+        public string TableId { get; set; }
 
         public string TableNumber { get; set; }
 
@@ -22,4 +22,9 @@ namespace App.Core.Domain.Entities
 
         public bool IsAvailable { get; set; }
     }
+
+
 }
+
+
+
