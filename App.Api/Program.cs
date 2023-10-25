@@ -43,20 +43,20 @@ namespace App.Api
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
             var app = builder.Build();
 
-            using (var scope = app.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-                try
-                {
-                    var context = services.GetRequiredService<ApplicationDbContext>();
-                    context.Database.Migrate();
-                }
-                catch (Exception ex)
-                {
-                    var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "An error occurred while migrating or initializing the database.");
-                }
-            }
+            //using (var scope = app.Services.CreateScope())
+            //{
+            //    var services = scope.ServiceProvider;
+            //    try
+            //    {
+            //        var context = services.GetRequiredService<ApplicationDbContext>();
+            //        context.Database.Migrate();
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        var logger = services.GetRequiredService<ILogger<Program>>();
+            //        logger.LogError(ex, "An error occurred while migrating or initializing the database.");
+            //    }
+            //}
 
 
             if (app.Environment.IsDevelopment())
