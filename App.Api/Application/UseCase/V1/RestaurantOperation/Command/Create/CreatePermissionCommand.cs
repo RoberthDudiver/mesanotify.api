@@ -7,12 +7,14 @@ using System;
 using System.ComponentModel.DataAnnotations;
 namespace App.Api.Application.UseCase.V1.RestaurantOperation.Command.Create
 {
-    public class CreateRestaurantCommand: IRequest<Response<CreateRestaurantResponse>>
+    public class CreateRestaurantCommand : IRequest<Response<CreateRestaurantResponse>>
     {
 
         public string Name { get; set; }
         public string Address { get; set; }
         public string Country { get; set; }
+        public string Logo { get; set; }
+        public string Banner { get; set; }
 
         public List<ContactBase> Contact { get; set; }
 
@@ -37,14 +39,16 @@ namespace App.Api.Application.UseCase.V1.RestaurantOperation.Command.Create
             {
                 Name = request.Name,
                 Contact = request.Contact,
-                 Tables = request.Tables,
-                 MenuImage = request.MenuImage,
-                  Address = request.Address,
-                  Country= request.Country,
+                Tables = request.Tables,
+                MenuImage = request.MenuImage,
+                Address = request.Address,
+                Banner = request.Banner,
+                Logo = request.Logo,
+                Country = request.Country,
                 DateAdd = DateTime.UtcNow,
-                 DateUpd= DateTime.UtcNow,
-                 UpdateBy="System",
-                CreateBy="System",
+                DateUpd = DateTime.UtcNow,
+                UpdateBy = "System",
+                CreateBy = "System",
                 Active = true
             };
 
