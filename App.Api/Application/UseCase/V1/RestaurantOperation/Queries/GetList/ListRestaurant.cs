@@ -14,12 +14,12 @@ namespace App.Api.Application.UseCase.V1.RestaurantOperation.Queries.GetList
     {
     }
 
-    public class ListPersonHandler : IRequestHandler<ListRestaurant, Response<List<Restaurant>>>
+    public class ListRestaurantHandler : IRequestHandler<ListRestaurant, Response<List<Restaurant>>>
     {
         private readonly IMongoRepository<Restaurant> _repository;
-        private readonly ILogger<ListPersonHandler> _logger;
+        private readonly ILogger<ListRestaurantHandler> _logger;
 
-        public ListPersonHandler(IMongoRepository<Restaurant> repository , ILogger<ListPersonHandler> logger)
+        public ListRestaurantHandler(IMongoRepository<Restaurant> repository , ILogger<ListRestaurantHandler> logger)
         {
             _repository = repository;
             _logger = logger;

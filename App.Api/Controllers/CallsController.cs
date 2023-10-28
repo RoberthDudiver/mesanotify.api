@@ -2,6 +2,7 @@
 using App.Api.Application.UseCase.V1.CallsOperation.Command.Create;
 using App.Api.Application.UseCase.V1.CallsOperation.Command.Delete;
 using App.Api.Application.UseCase.V1.CallsOperation.Command.Update;
+using App.Api.Application.UseCase.V1.CallsOperation.Queries.Get;
 using App.Api.Application.UseCase.V1.CallsOperation.Queries.GetList;
 using App.Api.Application.UseCase.V1.CallsOperation.Queries.GetSearch;
 
@@ -36,7 +37,19 @@ namespace App.Api.Controllers
         [ProducesResponseType(typeof(List<Notify>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get() => Result(await Mediator.Send(new ListCalls()));
 
+        [HttpGet("{Id}")]
+        [ProducesResponseType(typeof(List<Restaurant>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<Notify>), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Get( string Id)
+        {
+            var get = new GetCalls
+            {
+                Id = Id
+            };
 
+            var result = await Mediator.Send(get);
+            return Result(result);
+        }
 
         [HttpGet("Search")]
         [ProducesResponseType(typeof(List<Calls>), StatusCodes.Status200OK)]
