@@ -1,16 +1,16 @@
-using App.Api.Application.UseCase.V1.PermissionOperation.Command.Create;
 using App.Api.Common;
 using App.Core.Domain.Entities;
 using App.Infrastructure.Data;
 using App.Infrastructure.Repositories;
-using Elastic.CommonSchema;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Http.Connections;
+using Microsoft.AspNetCore.SignalR;
+
 using MongoDB.Driver;
 using Serilog;
 using System.Reflection;
+using App.Api.Hubs;
+using Elastic.CommonSchema;
 
 namespace App.Api
 {
@@ -37,26 +37,19 @@ namespace App.Api
 
             builder.Services.AddTransient(typeof(IMongoRepository<Restaurant>), typeof(MongoRepository<Restaurant>));
             builder.Services.AddTransient(typeof(IMongoRepository<Calls>), typeof(MongoRepository<Calls>));
-
-
-
+            builder.Services.AddSignalR();
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowOrigin", builder => builder
+                    .WithOrigins("http://localhost:3000") 
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials());
+            });
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
             var app = builder.Build();
-
-            //using (var scope = app.Services.CreateScope())
-            //{
-            //    var services = scope.ServiceProvider;
-            //    try
-            //    {
-            //        var context = services.GetRequiredService<ApplicationDbContext>();
-            //        context.Database.Migrate();
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        var logger = services.GetRequiredService<ILogger<Program>>();
-            //        logger.LogError(ex, "An error occurred while migrating or initializing the database.");
-            //    }
-            //}
+            app.MapHub<CallsHub>("/CallsHub");
+            app.UseCors("AllowOrigin");
 
 
             if (app.Environment.IsDevelopment())

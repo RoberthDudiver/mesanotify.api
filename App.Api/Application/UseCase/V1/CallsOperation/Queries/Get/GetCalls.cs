@@ -7,14 +7,16 @@ using App.Core.Domain.Entities;
 using App.Infrastructure.Repositories;
 using MediatR;
 using System;
+using ZstdSharp;
 
-namespace App.Api.Application.UseCase.V1.CallsOperation.Queries.GetList
+namespace App.Api.Application.UseCase.V1.CallsOperation.Queries.Get
 {
-    public record struct ListCalls : IRequest<Response<List<Calls>>>
+    public record struct GetCalls : IRequest<Response<Calls>>
     {
+        public string Id { get; set; }
     }
 
-    public class GetCallsHandler : IRequestHandler<ListCalls, Response<List<Calls>>>
+    public class GetCallsHandler : IRequestHandler<GetCalls, Response<Calls>>
     {
         private readonly IMongoRepository<Calls> _repository;
         private readonly ILogger<GetCallsHandler> _logger;
@@ -25,15 +27,18 @@ namespace App.Api.Application.UseCase.V1.CallsOperation.Queries.GetList
             _logger = logger;
         }
 
-        public async Task<Response<List<Calls>>> Handle(ListCalls request, CancellationToken cancellationToken)
+        public async Task<Response<Calls>> Handle(GetCalls request, CancellationToken cancellationToken)
         {
-            var result = await _repository.GetAllAsync();
+            var result = await _repository.GetByIdAsync(request.Id);
 
-
-            _logger.LogInformation("Trajo uchas cosas");
-            return new Response<List<Calls>>
+            if(result == null)
             {
-                Content = result.ToConvertObjects<List<Calls>>(),
+                 throw new  UnauthorizedAccessException("Not found");
+            }
+            _logger.LogInformation("Trajo uchas cosas");
+            return new Response<Calls>
+            {
+                Content = result.ToConvertObjects<Calls>(),
                 StatusCode = System.Net.HttpStatusCode.OK
             };
         }
