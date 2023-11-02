@@ -11,6 +11,8 @@ namespace App.Core.Domain.Entities
         public string Id { get; set; }
         public string Name { get; set; }
 
+        public string UserId { get; set; }
+
         public string Logo { get; set; }
         public string Banner { get; set; }
 

@@ -15,6 +15,8 @@ namespace App.Api.Application.UseCase.V1.RestaurantOperation.Command.Create
         public string Country { get; set; }
         public string Logo { get; set; }
         public string Banner { get; set; }
+        public string UserId { get; set; }
+
 
         public List<ContactBase> Contact { get; set; }
 
@@ -38,6 +40,7 @@ namespace App.Api.Application.UseCase.V1.RestaurantOperation.Command.Create
             var entity = new Restaurant
             {
                 Name = request.Name,
+                 UserId = request.UserId,
                 Contact = request.Contact,
                 Tables = request.Tables,
                 MenuImage = request.MenuImage,

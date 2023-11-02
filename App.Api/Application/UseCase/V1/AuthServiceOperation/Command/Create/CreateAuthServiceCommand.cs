@@ -2,6 +2,8 @@
 using App.Core.Domain.Entities;
 using App.Infrastructure.Repositories;
 using Azure.Core;
+using App.Core.Utils;
+
 using MediatR;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -9,70 +11,82 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Web.Http;
 
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+
 namespace App.Api.Application.UseCase.V1.AuthServiceOperation.Command.Create
 {
     public class CreateAuthServiceCommand : IRequest<Response<CreateAuthServiceResponse>>
     {
-        public string CallType { get; set; }
-        public string TableId { get; set; }
-        public string RestaurantId { get; set; }
-
-        public bool Active { get; set; }
+        public string Password { get; set; }
+        public string Username { get; set; }
     }
-    public class CreateCallsommandHandler : IRequestHandler<CreateAuthServiceCommand, Response<CreateAuthServiceResponse>>
+    public class CreateAuthServicommandHandler : IRequestHandler<CreateAuthServiceCommand, Response<CreateAuthServiceResponse>>
     {
-        private readonly IMongoRepository<Calls> _repository;
-        private readonly IMongoRepository<Restaurant> _restaurantrepository;
+        private readonly IMongoRepository<User> _repository;
 
-        private readonly ILogger<CreateCallsommandHandler> _logger;
+        private readonly ILogger<CreateAuthServicommandHandler> _logger;
+        private readonly IConfiguration _configuration;
 
-        public CreateCallsommandHandler(IMongoRepository<Calls> repository, ILogger<CreateCallsommandHandler> logger, IMongoRepository<Restaurant> restaurantrepository)
+        public CreateAuthServicommandHandler(IMongoRepository<User> repository, ILogger<CreateAuthServicommandHandler> logger, IConfiguration configuration)
         {
             _repository = repository;
             _logger = logger;
-            _restaurantrepository=  restaurantrepository;
+            _configuration = configuration;
         }
 
         public async Task<Response<CreateAuthServiceResponse>> Handle(CreateAuthServiceCommand request, CancellationToken cancellationToken)
         {
 
-            var rest = await _restaurantrepository.GetByIdAsync(request.RestaurantId);
 
-            if (rest == null)
+
+            Expression<Func<User, bool>> filterExpression = x =>
+               (string.IsNullOrEmpty(request.Username) || x.Username.ToLower().Equals(request.Username.ToLower()));
+
+            var result = await _repository.SearchAsync(filterExpression);
+
+
+            if (result == null)
             {
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
+            var user = result.FirstOrDefault();
+
+            var validate =  ObjectExtensions.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt);
 
 
-            var table = rest.Tables.SingleOrDefault(x => x.TableId == request.TableId);
 
-            if (table == null)
+            if (!validate)
             {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
+                throw new HttpResponseException(HttpStatusCode.Unauthorized);
             }
 
-
-            var entity = new Calls
+      
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_configuration["JwtConfig:Secret"]);
+            var tokenDescriptor = new SecurityTokenDescriptor
             {
-                CallType = request.CallType,
-                TableId = request.TableId,
-                Table = table,
-                DateAdd = DateTime.UtcNow,
-                DateUpd = DateTime.UtcNow,
-                UpdateBy = "System",
-                CreateBy = "System",
-                Active = request.Active
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                new Claim(ClaimTypes.Name, user.Id.ToString())
+                }),
+                Expires = DateTime.UtcNow.AddDays(30),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
+            var tokenCr = tokenHandler.CreateToken(tokenDescriptor);
+            var token= tokenHandler.WriteToken(tokenCr);
 
-            await _repository.CreateAsync(entity);
-            _logger.LogDebug("the calls  was add correctly");
+ 
+            _logger.LogDebug("the user  was loged correctly");
 
             return new Response<CreateAuthServiceResponse>
             {
                 Content = new CreateAuthServiceResponse
                 {
                     Message = "Success",
-                    Id = entity.Id
+                    Token = token
                 },
                 StatusCode = System.Net.HttpStatusCode.Created
             };
