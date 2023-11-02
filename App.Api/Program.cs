@@ -37,6 +37,8 @@ namespace App.Api
 
             builder.Services.AddTransient(typeof(IMongoRepository<Restaurant>), typeof(MongoRepository<Restaurant>));
             builder.Services.AddTransient(typeof(IMongoRepository<Calls>), typeof(MongoRepository<Calls>));
+            builder.Services.AddTransient(typeof(IMongoRepository<App.Core.Domain.Entities.User>), typeof(MongoRepository<App.Core.Domain.Entities.User>));
+
             builder.Services.AddSignalR();
             builder.Services.AddCors(options =>
             {

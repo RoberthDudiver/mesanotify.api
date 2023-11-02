@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using App.Core.Domain.Entities;
+using System.Linq.Expressions;
 
 namespace App.Infrastructure.Repositories
 {
@@ -10,5 +11,6 @@ namespace App.Infrastructure.Repositories
         Task<T> GetByIdAsync(string id);
         Task UpdateAsync(string id, T entity);
         Task<IEnumerable<T>> SearchAsync(Expression<Func<T, bool>> filterExpression);
+
     }
 }

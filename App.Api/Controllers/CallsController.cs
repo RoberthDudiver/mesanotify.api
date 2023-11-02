@@ -38,7 +38,7 @@ namespace App.Api.Controllers
         public async Task<IActionResult> Get() => Result(await Mediator.Send(new ListCalls()));
 
         [HttpGet("{Id}")]
-        [ProducesResponseType(typeof(List<Restaurant>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<Calls>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(List<Notify>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get( string Id)
         {
