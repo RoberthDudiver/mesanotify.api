@@ -20,18 +20,17 @@ namespace App.Api.Controllers
 
     public class CallsController : ApiControllerBase
     {
-        [Authorize]
+        
         [HttpPost]
         [ProducesResponseType(typeof(CreateCallsHubCommand), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(List<Notify>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create(CreateCallsHubCommand body) => Result(await Mediator.Send(body));
-        [Authorize]
+    
         [HttpPut]
         [ProducesResponseType(typeof(UpdateCallsCommand), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(List<Notify>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Update(UpdateCallsCommand body) => Result(await Mediator.Send(body));
         [Authorize]
-
         [HttpDelete]
         [ProducesResponseType(typeof(DeleteCallsCommand), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(List<Notify>), StatusCodes.Status400BadRequest)]
@@ -43,7 +42,7 @@ namespace App.Api.Controllers
         [ProducesResponseType(typeof(List<Calls>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(List<Notify>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get() => Result(await Mediator.Send(new ListCalls()));
-        [Authorize]
+   
 
         [HttpGet("{Id}")]
         [ProducesResponseType(typeof(List<Calls>), StatusCodes.Status200OK)]
@@ -59,7 +58,6 @@ namespace App.Api.Controllers
             return Result(result);
         }
         [Authorize]
-
         [HttpGet("Search")]
         [ProducesResponseType(typeof(List<Calls>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(List<Notify>), StatusCodes.Status400BadRequest)]

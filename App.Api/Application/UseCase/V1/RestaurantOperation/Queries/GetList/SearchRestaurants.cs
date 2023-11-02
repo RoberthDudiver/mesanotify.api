@@ -35,7 +35,7 @@ namespace App.Api.Application.UseCase.V1.RestaurantOperation.Queries.GetSearch
         {
             Expression<Func<Restaurant, bool>> filterExpression = x =>
              (string.IsNullOrEmpty(request.SearchText) || x.Name.Contains(request.SearchText)) ||
-             (string.IsNullOrEmpty(request.SearchText) || x.UserId.Contains(request.SearchText)) ||
+             (string.IsNullOrEmpty(request.SearchText) || x.UserId.Equals(request.SearchText)) ||
              (string.IsNullOrEmpty(request.SearchText) || x.Address.Contains(request.SearchText));
 
 
