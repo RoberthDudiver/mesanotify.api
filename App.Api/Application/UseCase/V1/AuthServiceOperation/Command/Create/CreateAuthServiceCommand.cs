@@ -48,22 +48,37 @@ namespace App.Api.Application.UseCase.V1.AuthServiceOperation.Command.Create
             var result = await _repository.SearchAsync(filterExpression);
 
 
-            if (result == null)
+            if (result == null || result.Count() == 0)
             {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
+
+                return new Response<CreateAuthServiceResponse>
+                {
+                    Content = new CreateAuthServiceResponse
+                    {
+                        Message = "Error"
+                    },
+                    StatusCode = System.Net.HttpStatusCode.NotFound
+                };
             }
             var user = result.FirstOrDefault();
 
-            var validate =  ObjectExtensions.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt);
+            var validate = ObjectExtensions.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt);
 
 
 
             if (!validate)
             {
-                throw new HttpResponseException(HttpStatusCode.Unauthorized);
+                return new Response<CreateAuthServiceResponse>
+                {
+                    Content = new CreateAuthServiceResponse
+                    {
+                        Message = "Error"
+                    },
+                    StatusCode = System.Net.HttpStatusCode.Unauthorized
+                };
             }
 
-      
+
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_configuration["JwtConfig:Secret"]);
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -76,9 +91,9 @@ namespace App.Api.Application.UseCase.V1.AuthServiceOperation.Command.Create
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var tokenCr = tokenHandler.CreateToken(tokenDescriptor);
-            var token= tokenHandler.WriteToken(tokenCr);
+            var token = tokenHandler.WriteToken(tokenCr);
 
- 
+
             _logger.LogDebug("the user  was loged correctly");
 
             return new Response<CreateAuthServiceResponse>
